@@ -12,7 +12,7 @@ def is_nn_target(output, target, mels):
     return (output_NN - target).abs().sum() < 1e-5
 
 
-def test_pgd_untargeted(model, device, test_loader, epsilon, alpha = 1/255, steps = 40):
+def test_pgd_untargeted(model, device, test_loader, epsilon, mels, alpha = 1/255, steps = 40):
     # Accuracy counter
     correct = 0
     adv_examples = []
@@ -24,37 +24,39 @@ def test_pgd_untargeted(model, device, test_loader, epsilon, alpha = 1/255, step
         data.requires_grad = True
         # Forward pass the data through the model
         output = model(data)
-        # Get the index of the max log-probability
-        init_pred = output.max(1, keepdim=True)[1]
+        # Calculate the loss
+        init_loss = nn.functional.smooth_l1_loss(output, target)
 
         # If the initial prediction is wrong, dont bother attacking, just move on
-        if init_pred.item() != target.item():
+        if not is_nn_target(output, target, mels):
             continue
         elif epsilon == 0:
             correct += 1
             if len(adv_examples) < 30:
                 # Save some examples for visualization later
                 adv_ex = data.squeeze().detach().cpu().numpy()
-                adv_examples.append((init_pred.item(), init_pred.item(), adv_ex))
+                adv_examples.append((init_loss.item(), init_loss.item(), adv_ex))
             continue
 
-        # Calculate the loss
-        loss = loss = nn.CrossEntropyLoss()
         # Zero all existing gradients
-
-        # Call PGD Attack
+        model.zero_grad()
+        # Calculate gradients of model in backward pass
+        init_loss.backward()
+        # Collect datagrad
+        data_grad = data.grad.data
+        # Call FGSM Attack
         perturbed_data = attack(data, target)
         # Re-classify the perturbed image
         output = model(perturbed_data)
 
         # Check for success
-        final_pred = output.max(1, keepdim=True)[1]
-        if final_pred.item() == target.item():
+        if is_nn_target(output, target, mels):
             correct += 1
         elif len(adv_examples) < 30:
             # Save some adv examples for visualization later
+            final_loss = nn.functional.smooth_l1_loss(output, target)
             adv_ex = perturbed_data.squeeze().detach().cpu().numpy()
-            adv_examples.append((init_pred.item(), final_pred.item(), adv_ex))
+            adv_examples.append((init_loss.item(), final_loss.item(), adv_ex))
 
     # Calculate final accuracy for this epsilon
     final_acc = correct / float(len(test_loader))

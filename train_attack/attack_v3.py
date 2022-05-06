@@ -136,6 +136,7 @@ else:
 
 num_steps = 5
 
+
 print("Test PGD untargeted")
 pgd_acc = []
 pgd_examples = []
@@ -146,14 +147,7 @@ for eps in epsilons:
 
 torch.save(
     {
-        "fgsm_acc": fgsm_acc,
-        "fgsm_examples": fgsm_examples,
-        "fgsm_targeted_acc": fgsm_targeted_acc,
-        "fgsm_targeted_examples": fgsm_targeted_examples,
-        "iter_acc": iter_acc,
-        "iter_examples": iter_examples,
-        "iter_targeted_acc": iter_targeted_acc,
-        "iter_targeted_examples": iter_targeted_examples,
+        "pgd_acc": pgd_acc,
         "pgd_untargeted_acc": pgd_examples
     },
     attack_results_path,
