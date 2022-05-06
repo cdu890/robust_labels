@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torchattacks
 
 
 # Checks if the nearest neighbor of the output is the target
@@ -10,29 +11,12 @@ def is_nn_target(output, target, mels):
     output_NN = mels[torch.argmin(mse_dists)]
     return (output_NN - target).abs().sum() < 1e-5
 
-def pgd_attack(images, labels, epsilon, model, loss, device, alpha = 2/255, iters = 40):
-
-    ori_images = images.data
-
-    for i in range(iters):
-        images.requires_grad = True
-        
-        outputs = model(images)
-        
-        model.zero_grad()
-        cost = loss(outputs, labels).to(device)
-        cost.backward()
-
-        adv_images = images + alpha * images.grad.sign()
-        eta = torch.clamp(adv_images - ori_images, min = -epsilon, max = epsilon)
-        images = torch.clamp(ori_images + eta, min = 0 , max = 1).detach_()
-    return images
 
 def test_pgd_untargeted(model, device, test_loader, epsilon, alpha = 1/255, steps = 40):
     # Accuracy counter
     correct = 0
     adv_examples = []
-
+    attack = torchattacks.PGD(model, eps=epsilon, alpha=2/255, steps=4)
     for data, target in test_loader:
         # Send the data and label to the device
         data, target = data.to(device), target.to(device)
@@ -55,11 +39,11 @@ def test_pgd_untargeted(model, device, test_loader, epsilon, alpha = 1/255, step
             continue
 
         # Calculate the loss
-        loss = nn.functional.cross_entropy(output, target)
+        loss = loss = nn.CrossEntropyLoss()
         # Zero all existing gradients
 
         # Call PGD Attack
-        perturbed_data = pgd_attack(data, target, epsilon, model, loss, device)
+        perturbed_data = attack(data, target)
         # Re-classify the perturbed image
         output = model(perturbed_data)
 
@@ -82,6 +66,7 @@ def test_pgd_untargeted(model, device, test_loader, epsilon, alpha = 1/255, step
 
     # Return the accuracy and an adversarial example
     return final_acc, adv_examples
+
 
 
 

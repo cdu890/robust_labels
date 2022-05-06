@@ -1,28 +1,8 @@
 import torch
 import torch.nn as nn
+import torchattacks
 
 # from torchtoolbox.nn import LabelSmoothingLoss
-
-def pgd_attack(images, labels, epsilon, model, loss, device, alpha = 2/255, iters = 40):
-
-    ori_images = images.data
-
-    for i in range(iters):
-        images.requires_grad = True
-        
-        outputs = model(images)
-        
-        model.zero_grad()
-        cost = loss(outputs, labels)
-        cost.to(device)
-        cost.backward()
-
-        adv_images = images + alpha * images.grad.sign()
-        eta = torch.clamp(adv_images - ori_images, min = -epsilon, max = epsilon)
-        images = torch.clamp(ori_images + eta, min = 0 , max = 1).detach_()
-    return images
-
-
 
 
 def fgsm_attack(image, epsilon, data_grad):
@@ -42,7 +22,7 @@ def test_pgd_untargeted(model, device, test_loader, epsilon, alpha = 1/255, step
     # Accuracy counter
     correct = 0
     adv_examples = []
-
+    attack = torchattacks.PGD(model, eps=epsilon, alpha=2/255, steps=4)
     for data, target in test_loader:
         # Send the data and label to the device
         data, target = data.to(device), target.to(device)
@@ -69,7 +49,7 @@ def test_pgd_untargeted(model, device, test_loader, epsilon, alpha = 1/255, step
         # Zero all existing gradients
 
         # Call PGD Attack
-        perturbed_data = pgd_attack(data, target, epsilon, model, loss, device)
+        perturbed_data = attack(data, target)
         # Re-classify the perturbed image
         output = model(perturbed_data)
 
