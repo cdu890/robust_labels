@@ -136,49 +136,6 @@ else:
 
 num_steps = 5
 
-# 1) test FGSM (untargeted)
-print("Test FGSM untargeted")
-fgsm_acc = []
-fgsm_examples = []
-for eps in epsilons:
-    acc, ex = test_fgsm_untargeted(model, device, attackloader, eps, mels)
-    fgsm_acc.append(acc)
-    fgsm_examples.append(ex)
-
-# 2) test FGSM (targeted)
-print("Test FGSM targeted")
-fgsm_targeted_acc = []
-fgsm_targeted_examples = []
-for eps in epsilons:
-    acc, ex = test_fgsm_targeted(model, num_classes, device, attackloader, eps, mels)
-    fgsm_targeted_acc.append(acc)
-    fgsm_targeted_examples.append(ex)
-
-# 3) test iterative (untargeted)
-print("Test iterative untargeted")
-iter_acc = []
-iter_examples = []
-for eps in epsilons:
-    alpha = eps / num_steps
-    acc, ex = test_iterative_untargeted(
-        model, device, attackloader, mels, eps, alpha, num_steps
-    )
-    iter_acc.append(acc)
-    iter_examples.append(ex)
-
-# 4) test iterative (targeted)
-print("Test iterative targeted")
-iter_targeted_acc = []
-iter_targeted_examples = []
-for eps in epsilons:
-    alpha = eps / num_steps
-    acc, ex = test_iterative_targeted(
-        model, num_classes, device, attackloader, mels, eps, alpha, num_steps
-    )
-    iter_targeted_acc.append(acc)
-    iter_targeted_examples.append(ex)
-
-
 print("Test PGD untargeted")
 pgd_acc = []
 pgd_examples = []
