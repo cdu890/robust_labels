@@ -46,16 +46,7 @@ data_dir = args.data_dir
 base_dir = args.base_dir
 label_dir = args.label_dir
 dataset = args.dataset
-assert label in (
-    "speech",
-    "uniform",
-    "shuffle",
-    "composite",
-    "random",
-    "lowdim",
-    "category",
-    "bert",
-)
+
 assert model_name in ("vgg19", "resnet110", "resnet32")
 assert dataset in ("cifar10", "cifar100")
 
@@ -76,6 +67,13 @@ elif label in ("lowdim", "glove"):
         test_iterative_targeted,
         test_pgd_untargeted
     )
+elif label.startswith("normal") or label.startswith("uniform"):
+    from utils.attack_lowdim_utils import (
+        test_fgsm_untargeted,
+        test_fgsm_targeted,
+        test_iterative_untargeted,
+        test_iterative_targeted,
+    )    
 else:
     from utils.attack_highdim_utils import (
         test_fgsm_untargeted,
@@ -115,7 +113,15 @@ attackloader = cifar.get_test_loader(data_dir, label, num_classes, num_workers, 
 
 # Model setup
 if "category" in label or label in ("lowdim", "glove"):
-    model = architecture.CategoryModel(model_name, num_classes)
+    if label == "glove":
+        model = architecture.CategoryModel(model_name, 50)
+    else:
+        model = architecture.CategoryModel(model_name, num_classes)
+elif label.startswith("normal"):
+    dimension = int(label.split("=")[-1])
+    model = architecture.CategoryModel(model_name, dimension)
+elif label.startswith("uniform"):
+    model = architecture.CategoryModel(model_name, 50)
 elif label == "bert":
     model = architecture.BERTHighDimensionalModel(model_name, num_classes)
 else:
