@@ -13,7 +13,7 @@ Code Source: https://github.com/BoyuanChen/label_representations (code in this r
 ## Repository Description
 
 + `baseline_ResNet32.ipynb` - Recreation of the results of the Chen et al. paper using ResNet-32. Also contains a data efficiency experiment with ResNet-110.
-+ `experiments.ipynb` - Original experiments related to entropy and overlap using ResNet-32.
++ `experiments_ResNet32.ipynb` - Original experiments related to entropy and overlap using ResNet-32.
 + `PGD_ResNet32.ipynb` - PGD attacks against ResNet-32 models.
 + `plots.ipynb` - Figure generation for presentation.
 + `labels` - Directory of labels used and code used to generate labels
