@@ -25,6 +25,8 @@ Code Source: https://github.com/BoyuanChen/label_representations (code in this r
 
 ### Baseline Accuracy
 
+![plot](./figs/convergence.png)
+
 + High dimensional labels achieve a similar accuracy to categorical labels
 + High dimensional labels converge slower (especially Uniform label)
 
