@@ -33,12 +33,16 @@ Code Source: https://github.com/BoyuanChen/label_representations (code in this r
 
 ### Data Efficiency
 
+![plot](./figs/data_eff.png)
+
 + Data efficiency improvements is network/depth-specific
 + VGG19: Improvement noticeable at < 4% of training data
 + ResNet-32: Little improvement at any subset of training data
-+ ResNet-11-: Improvement noticeable at < 10% of training data
++ ResNet-110: Improvement noticeable at < 10% of training data
 
 ### Model Robustness
+
+![plot](./figs/orig_robust.png)
 
 + New labels are much more robust than categorical labels
 + Robustness is attack-specific and potentially network-specific
@@ -48,9 +52,13 @@ Code Source: https://github.com/BoyuanChen/label_representations (code in this r
 
 ### Investigating Entropy
 
+![plot](./figs/entropy_robust.png)
+
 + Entropy is likely not the feature that confers robustness to labels
 
 ### Beyond Entropy: Overlap between Class Labels
+
+![plot](./figs/gap_robust.png)
 
 + Larger gap resulted in more robustness in Iterative Targeted Attacks (ResNet-32)
 + No clear pattern for other attacks
