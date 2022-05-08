@@ -5,7 +5,9 @@
 This repository contains code and data for a project based on the Chen et al. paper, “Beyond Categorical Label Representations for Image Classification.” Beyond replicating the findings from the original paper that using high dimensional labels can improve a model’s robustness to adversarial attacks as well as its data efficiency, we explore possible explanations for these improvements. Following up on an idea from the paper, we investigate whether high entropy of certain label types may be responsible for their success, but find that this hypothesis is likely inaccurate. We also experiment with an alternative hypothesis, that the degree of overlap between the distributions of values in the high dimensional representations of label classes is responsible for improved robustness. We observe that less overlap results in more robustness and generally labels drawn from the uniform distribution perform better. The reasons behind the unintuitive influence of label representation on model robustness and efficiency remain unclear, and further research is required in order to better understand this phenomenon.
 
 Models used: VGG19, ResNet-32, ResNet-110
+
 Dataset: CIFAR-10
+
 Code Source: https://github.com/BoyuanChen/label_representations (code in this repository is only original code; please see this repo for additional scripts used)
 
 ## Repository Description
